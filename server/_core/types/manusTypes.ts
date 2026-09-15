@@ -21,6 +21,7 @@ export interface ExchangeTokenRequest {
   clientId: string;
   clientSecret?: string;
   redirectUri: string;
+  codeVerifier?: string;
 }
 
 export interface ExchangeTokenResponse {

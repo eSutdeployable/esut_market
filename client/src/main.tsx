@@ -24,6 +24,11 @@ const redirectToLoginIfUnauthorized = (error: unknown) => {
 
 const isTelemetryRequestFailure = (error: unknown) => error instanceof Error && error.message.includes("/api/trpc/observability.record");
 
+const apiBaseUrl = import.meta.env.VITE_API_URL;
+if (import.meta.env.PROD && !apiBaseUrl) {
+  throw new Error("VITE_API_URL is not set. Required for split architecture.");
+}
+
 queryClient.getQueryCache().subscribe(event => {
   if (event.type === "updated" && event.action.type === "error") {
     const error = event.query.state.error;
@@ -47,7 +52,7 @@ queryClient.getMutationCache().subscribe(event => {
 const trpcClient = trpc.createClient({
   links: [
     httpBatchLink({
-      url: "/api/trpc",
+      url: `${apiBaseUrl ?? ""}/api/trpc`,
       transformer: superjson,
       fetch: createMarketplaceApiFetch(),
     }),
